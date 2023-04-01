@@ -1,9 +1,13 @@
 import numpy as np
 from sympy import Matrix
 import logging
-from string_preprocessing import prepare_message, number_to_string
+from os import mkdir
+from os.path import exists
+from lib.string_preprocessing import prepare_message, number_to_string
 
-logging.basicConfig(format='%(asctime)s - %(message)s\n', filename='hill_cipher.log', filemode='w', level=logging.INFO, datefmt='%d-%b-%y %H:%M:%S')
+if not exists("Logs"):
+    mkdir("Logs")
+logging.basicConfig(format='%(asctime)s - %(message)s\n', filename='Logs/hill_cipher.log', filemode='w', level=logging.INFO, datefmt='%d-%b-%y %H:%M:%S')
 
 def crypt(plaintext:np.ndarray, key:np.ndarray,block_size)->np.ndarray:
     plaintext.resize((int(len(plaintext)/block_size) , block_size))

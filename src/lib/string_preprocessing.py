@@ -1,11 +1,9 @@
 import numpy as np
 import logging
 
-logging.basicConfig(format='%(asctime)s - %(message)s\n', filename='hill_cipher.log', filemode='w', level=logging.INFO, datefmt='%d-%b-%y %H:%M:%S')
-
-def add_padding(message:str, block_size:int)->str:
+def add_padding(message:str, block_size:int,padding_value:str = "X" )->str:
     if len(message) % block_size != 0:
-        message += "X" * (block_size - (len(message) % block_size))
+        message += padding_value * (block_size - (len(message) % block_size))
     return message
 
 def sring_to_number(message:str)-> np.ndarray:
