@@ -291,3 +291,62 @@ L'istogramma è costruito con la funzione `make_histogram(frequency)` solo se $m
 Tutti i risultati della computazione sono scritti nel file di log
 
 ## Cifrario di Hill
+
+Per cifrare con Hill dobbiamo prima creare una chiave che sia invertibile modulo 26.
+Per fare ciò utilizziamo la funzione `generate_key(block_size)` dove `block_size` e un numero intero casuale tra 2 e 10 (numeri più alti rendono la computazione troppo onerosa).
+
+La funzione  popola una matrice `block_size*block_size` con numeri interi casuali da 0 a 25, che rappresentano le 26 lettere dell'alfabeto, fino a che non se ne trova una che è invertibile modulo 26. Per testare l'invertibilità si chiama semplicemene il metodo `Matrix(key).inv_mod(26)` della libreria `sympy` per verificare che non venca solleva nessuna eccezione:
+
+```Python
+def generate_key(block_size:int)->np.ndarray:
+    while True:
+        key = np.random.randint(0, 26, size=(block_size, block_size))
+        try:
+            Matrix(key).inv_mod(26)
+        except ValueError:
+            continue
+        logging.info("[KEY GENERATED]\n{key}".format(key=key))
+        return key
+```
+A questo punto dobbiamo prepare il messaggio da cifrare con la funzione `prepare_message(message, block_size)`.
+
+Per preparazione del messaggio si intende:
+- trasformare la stringa il caratteri maiuscoli con `message.upper()`
+- rimuovere tutti gli spazi con `remove_spaces(message)`
+- aggiungere caratteri di padding per rendere la lungezza del messaggio divisibile per `block_size` con `add_padding(message, block_size)`
+- convertire la stringa in numere da permetterne l'elaborazione con `sring_to_number(message)`.
+
+Abbiamo quindi la chiave e il messaggio numerico. Non ci resta altro che cifrare il messaggio con `crypt(message, key, block_size)`.
+
+La funzione trasforma prima la stringa inn una matrice $(n/blocksize)*blocksize$ e successivamente esegue la moltiplicazione tra matrici tra il `plaintext` e `key`, il tutto modulo 26.
+
+> L'operazione è invertita, cioè non si moltiplica la chiave al plaintext perchè non tornerebbero le dimensioni per come abbiamo definito la matrice del plaintext.
+> In alterativa possiamo moltiplicare alla chiave la trasposta del plaintext.
+
+```Python
+def crypt(plaintext:np.ndarray, key:np.ndarray,block_size)->np.ndarray:
+    plaintext.resize((int(len(plaintext)/block_size) , block_size))
+    ciphertext = np.dot(plaintext, key) % 26
+    logging.info("[CIPHERTEXT]\n{ciphertext}\n{text}".format( \ 
+    ciphertext = ciphertext, text = number_to_string(ciphertext)))
+    return ciphertext
+```
+Una volta ottenuto il `ciphertext` possiamo decriptarlo con `decrypt(crypted, key)`. La funzione inverte modulo 26 la chiave ed esegue il prodotto tra matrici modulo 26 di `ciphertext` e `key_inv` ovvero l'inversa della chiave.
+
+```Python
+def decrypt(ciphertext:np.ndarray, key:np.ndarray)->np.ndarray:
+    key_inv = Matrix(key).inv_mod(26)
+    key_inv = np.array(key_inv).astype(float)
+    logging.info("[KEY INVERSE]\n{key_inv}".format(key_inv = key_inv))
+    plaintext = np.dot(ciphertext,key_inv) % 26
+    logging.info("[PLAINTEXT]\n{plaintext}\n{text}".format( \
+        plaintext = plaintext, text = number_to_string(plaintext)))
+    return plaintext
+```
+
+> Anche in questo caso l'ordine di moltiplicazione è invertito per come abbiamo definito la matrice di plaintext
+
+Il messaggio numerico decifrato è poi riportato in lettere tramite la funzione `number_to_string(decrypted)`
+
+Tutti i riultati della computazione sono riportati nel file di log [hill_cipher.py](Logs/hill_cipher.log)
+
