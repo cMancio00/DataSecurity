@@ -234,9 +234,12 @@ Il codice eseguibile è:
 - [Frequency_analysis.py](/src/Frequency_analysis.py)
 - [Hill_cipher.py](/src/Hill_cipher.py)
 - [Hill_attack.py](/src/Hill_attack.py)
+
 ## Analisi delle frequenze di un testo
 L'istogramma delle frequenze del testo è il seguente:
-![istogramma](/Pictures/Frequency_analysis.png)
+
+![Istogramma delle frequenze](Pictures/Frequency_analysis.png)
+
 Indici di coincidenza, distribuzione empirica e entropia degli m-grammi sono disponibili nel file di log [frequency_analysis.log](/Logs/frequency_analysis.log)
 
 ### Funzionamento
@@ -265,7 +268,8 @@ def calculate_index_of_coincidence(frequency:dict)->float:
     index_of_coincidence = 0.0
     for key in frequency:
         index_of_coincidence += frequency[key] ** 2
-    logging.info("[INDEX OF COINCIDENCE]\n{index_of_coincidence}".format(index_of_coincidence = index_of_coincidence))
+    logging.info("[INDEX OF COINCIDENCE]\n{index_of_coincidence}"\
+        .format(index_of_coincidence = index_of_coincidence))
     return index_of_coincidence
 ```
 
@@ -277,11 +281,13 @@ def calculate_shannon_entropy(frequency:dict)->float:
     for key in frequency:
         shannon_entropy += (frequency[key]) * np.log2(frequency[key])
     shannon_entropy *= -1
-    logging.info("[SHANNON ENTROPY]\n{shannon_entropy}".format(shannon_entropy = shannon_entropy))
+    logging.info("[SHANNON ENTROPY]\n{shannon_entropy}".format\ 
+    (shannon_entropy = shannon_entropy))
     return shannon_entropy
 ```
 
 L'istogramma è costruito con la funzione `make_histogram(frequency)` solo se $m=1$. La funzione utilizza sempre il dizionario che abbiamo creato ed è un modulo in `src/lib/plotter.py`
 
 Tutti i risultati della computazione sono scritti nel file di log
+
 ## Cifrario di Hill
