@@ -198,6 +198,7 @@ Y<-->|22|S
 A<-->|23|E
 ```
 I cicli possibili sono 10 (senza tener conto dell'nodo di partenza):
+
 1. AKGA
 2. RSYR
 3. ETIAE
@@ -224,5 +225,63 @@ Turing relativo ad un qualsiasi stato iniziale.**
 Le macchine Enigma vanno inserite sugli archi e devono restiturie i nodi del grafo.
 
 # Esercizi di programmazione
+Per eseguire il codice bisogna prima installare le dipendenze:
+```
+pip install -r requirements.txt
+```
+Il codice eseguibile è:
+
+- [Frequency_analysis.py](/src/Frequency_analysis.py)
+- [Hill_cipher.py](/src/Hill_cipher.py)
+- [Hill_attack.py](/src/Hill_attack.py)
 ## Analisi delle frequenze di un testo
+L'istogramma delle frequenze del testo è il seguente:
+![istogramma](/Pictures/Frequency_analysis.png)
+Indici di coincidenza, distribuzione empirica e entropia degli m-grammi sono disponibili nel file di log [frequency_analysis.log](/Logs/frequency_analysis.log)
+
+### Funzionamento
+Dato $m = 1,2,3,4,5$ si prepara il testo del capito 1 di Moby Dick.
+Dato che il file è abbastanza grande, un generatore restituisce riga per riga il testo, che è la funzione `read_text_file(text)`.
+Ad ogni riga vengono rimossi tutti i caratteri che non siano lettere con `remove_special_characters(line)`, viene divisa in m-grammi con `m_gram_split(line, m_gram_len)` e viene aggiornato il contatore degli m-grammi.
+Finite tutte le righe del testo si può calcolare la frequenza dei vari m-grammi con  `calculate_frequency(count)` e abbiamo cosi un dizionario formato da m-gramma:frequenza.
+
+Il procedimento spiegato sopra è racchiuso nella seguente funzione:
+
+```Python
+def process_text_file(text: str,m_gram_len:int) -> dict[str, int]:
+    text_gen = read_text_file(text)
+    count = Counter()
+    for line in text_gen:
+        line = remove_special_characters(line)
+        line = m_gram_split(line, m_gram_len)
+        count.update(line)
+    count = dict(count)
+    frequency = calculate_frequency(count)
+    return sort_by_name(frequency)
+```
+Addesso possiamo calcolare gli **indici di coincidenza** utilizzando il dizionario, creato in precedenza, e la funzione `calculate_index_of_coincidence(frequency)`, che è la seguente:
+```Python
+def calculate_index_of_coincidence(frequency:dict)->float:
+    index_of_coincidence = 0.0
+    for key in frequency:
+        index_of_coincidence += frequency[key] ** 2
+    logging.info("[INDEX OF COINCIDENCE]\n{index_of_coincidence}".format(index_of_coincidence = index_of_coincidence))
+    return index_of_coincidence
+```
+
+Sempre con lo stesso dizionario possiamo calcolare **l'entropia di Shannon**, tramite la funzione `calculate_shannon_entropy(frequency)` che è:
+
+```Python
+def calculate_shannon_entropy(frequency:dict)->float:
+    shannon_entropy = 0.0
+    for key in frequency:
+        shannon_entropy += (frequency[key]) * np.log2(frequency[key])
+    shannon_entropy *= -1
+    logging.info("[SHANNON ENTROPY]\n{shannon_entropy}".format(shannon_entropy = shannon_entropy))
+    return shannon_entropy
+```
+
+L'istogramma è costruito con la funzione `make_histogram(frequency)` solo se $m=1$. La funzione utilizza sempre il dizionario che abbiamo creato ed è un modulo in `src/lib/plotter.py`
+
+Tutti i risultati della computazione sono scritti nel file di log
 ## Cifrario di Hill
