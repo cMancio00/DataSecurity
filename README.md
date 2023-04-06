@@ -350,3 +350,95 @@ Il messaggio numerico decifrato è poi riportato in lettere tramite la funzione 
 
 Tutti i riultati della computazione sono riportati nel file di log [hill_cipher.py](Logs/hill_cipher.log)
 
+L'attacco al cifrario è disponibile nel file [Hill_attack.py](src/Hill_attack.py).
+
+Avendo noto:
+- dimensione del blocco
+- coppie cyphertext-plaintext
+
+procediamo nel seguente modo:
+
+Trasformiamo per prima cosa il testo in matrice quadrata di blocchi con la funzione `format_text(text,block_size)`
+
+Date le matrice create possiamo far partire l'attacco con la funzione `attack(known_cyphertext, sniffed_plaintext, block_size)` per trovare la chiave.
+
+L'attacco consiste nelle seguenti fasi:
+
+1. determinare se esiste la matrice inversa con la funzione `check_inverse_exists(sniffed_plaintext, block_size)`
+2. calcolare l'inversa con `calculate_inverse(sniffed_plaintext)`
+3. ricavare la chiave moltiplicando il `ciphertext` con `inverse` modulo 26
+
+La funzione che andremo a vedere più nel dettaglio è la seguente: 
+
+```Python
+def attack(known_cyphertext:np.ndarray, sniffed_plaintext:np.ndarray, block_size:int)->np.ndarray:
+    if not check_inverse_exists(sniffed_plaintext, block_size):
+        raise ValueError("Inverse does not exist")
+    inverse = calculate_inverse(sniffed_plaintext)
+    logging.info("Inverse: \n{inverse}".format( \ 
+    inverse = inverse))
+    key = dot(known_cyphertext,inverse) % 26
+    logging.info("Key: \n{key}".format(key = key))
+    return key
+```
+
+Per capire se esiste la matrice inversa dobbiamo eseguire MCD tra il determinate della matrice `plaintext` e `block_size`. Se i numero sono primi fra loro, cioè MCD = 1, allora esiste l'inversa e possiamo passare al calcolo.
+
+Il codice della verifica è il seguente:
+
+```Python
+def check_inverse_exists(plaintext:np.ndarray, block_size:int):
+    determinant = int(round(det(plaintext),0))
+    logging.info("Determinant: {determinant}".format(determinant = determinant))
+    divisor = gcd(determinant, block_size)
+    logging.info("Divisor: {divisor}".format( \ 
+    divisor = divisor))
+    return divisor == 1
+```
+
+Per calcolare l'inversa utilizziamo la regola di Cramer
+La funzione è la seguente:
+
+```Python
+def calculate_inverse(plaintext:np.ndarray)->np.ndarray:
+    denominator = mod_inverse(int(round(det(plaintext),0)),26)
+    logging.info("Denominator: {denominator}".format(denominator = denominator))
+    inverse = np.zeros(shape = plaintext.shape, dtype = int)
+    for i in range(plaintext.shape[0]):
+        for j in range(plaintext.shape[1]):
+            matrix = np.delete(np.delete(plaintext, j, 0), i, 1)
+            determinant = int(round(det(matrix),0))
+            inverse[i][j] = (determinant * denominator)
+            inverse[i][j] *= (-1)**(i+j)
+    return inverse % 26
+```
+
+Adesso che abbiamo l'inversa non ci resta che decifrare, quindi invertiamo la chiave trovata e moltiplichiamo il `ciphertext`, il tutto modulo 26.
+
+```Python
+def decrypt(founded_key:np.ndarray,sniffed_cyphertext:np.ndarray)->np.ndarray:
+    key_inv = Matrix(founded_key).inv_mod(26)
+    key_inv = np.array(key_inv).astype(int)
+    decrypted = dot(key_inv, sniffed_cyphertext) % 26
+    return np.transpose(decrypted)
+```
+
+L'ultimo passaggio è quello di convertire il messaggio numerico in lettere con `number_to_string(decrypted)`
+
+Tutti i passi della computazione sono riportati nel file di log [hill_attack.log](Logs/hill_attack.log)
+
+Un esempio di funzionamento è riportato in seguito:
+
+Avendo come input
+```Python
+sniffed_cyphertext = "VHECVJZHSPMVLUTAIYROHDTWEUWIGO"+\
+                     "LAMZLLLECIZSSZJYKJKTIXFIGVKWFS"
+block_size = 5
+sniffed_plaintext = "ILCIFRARIODIHILLAPPARTIEN"
+```
+
+Otteniamo come output:
+
+```
+ILCIFRARIODIHILLAPPARTIENEAICIFRARIMONOALFABETICIABLOCCHIXXX
+```
