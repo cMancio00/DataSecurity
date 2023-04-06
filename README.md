@@ -1,4 +1,4 @@
-# Eserci di approfondimento
+# Esercizi di approfondimento
 ## Un crittogramma di Vigenere
 Dato il sequente ciphertext:
 ```Python
@@ -86,7 +86,7 @@ Row 7: 0.0815229563269877
 Questi numeri sono abbastanza vicini al valore atteso 0.065, quindi concludiamo che 8 è il valore corretto della chiave.
 
 A questo punto possiamo determinare i singoli valori della chiave utilizzando la seguente formula:
-$$M^g(\bold{y_i})=\sum_{j=0}^{25}{p_j}(\frac{f_{g+j}}{n/m})$$
+$$M^g(y_i)=\sum_{j=0}^{25}{p_j}(\frac{f_{g+j}}{n/m})$$
 Per ciascuma delle 8 righe delle matrice calcoliamo $M^g$.
 ```Python
 key = list()
