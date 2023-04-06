@@ -132,6 +132,97 @@ AILINGTHEORBISESDECLINETHATTHEYWERESINKINGWITHITINTOTHEFINALNIGHTMARETHEPATHWOUL
 BEDIFFICULTTHATTOOTHEYKNEWJUPKT
 ```
 ## Enigma
+### Domanda A
+**Dare una formula per il numero possibili di chiavi Enigma. Dare un ordine di grandezza come multiplo di una potenza di 10 e di tale numero dire a quanti bit corrisponde. Calcolare il numero esatto di possibili stati iniziali.**
+
+La chiave è composta da 3 elementi:
+1. Scelta dei 3 rotori da un insieme di 5 rotori: $5\cdot4\cdot3 = 60$
+2. Posizione iniziale dei 3 rotori: $26^3$
+3. Connessionioni alla plugboard: Combinazione di 26 lettere dove vanno rimossi i 6 punti fissi. Di queste connessioni l'ordine delle coppie e l'ordine di ciascuna coppia non è rilevante, quindi vanno rimossi rispettivamente $10!$ e $2^{10}$.
+Otteniamo quindi $\frac{26!}{6!\cdot10!\cdot2^{10}}$ possibili connessioni.
+
+Moltiplicando questi 3 fattori otteniamo circa:
+$$\frac{1.9547\cdot10^{24}}{1.2288\cdot10^4}$$
+che è esprimibile come $10^{20}$ che richiede 66 bit, cioè quasi uno **zettabyte**.
+Gli stati iniziali possibili, cioè l'inieme dei 3 rotori e la loro posizione iniziale è $60\cdot26^3 = 1054560 = 1.05456\cdot10^6$.
+
+### Domanda B
+**Dimostrare che, detta $\rho$ la permutazione realizzata dalla macchina in uno stato qualsiasi, $\rho$ è un involuzione e non ha punti fissi. Dire come può essere ottenuta la decryption.**
+
+Per dimostrare che $\rho$ è un involuzione, sostituiamo i valori dalla quale è composta.
+Otteniamo il seguente risultato:
+$$\sigma\alpha^{\prime}\beta^{\prime}\gamma^{\prime}\pi\gamma\beta\alpha\sigma\sigma^{\prime}\alpha^{\prime}\beta^{\prime}\gamma^{\prime}\pi^{\prime}\gamma\beta\alpha\sigma^{\prime}(x) = x$$
+
+Quindi è un involuzione, questo perchè partendo dalla posizione centrale dell'equazione $\sigma\sigma^{\prime}$ tutte le funzioni si annullanno.
+
+La decryption può essere effettuata impostando la chiave nella macchina e digitando il ciphertext su di essa. Criptando il ciphertext otteniamo il plaintext.
+
+### Domanda C
+**Dato il frammento di plaintext `WETTERVORHERSAGEBISKAYA`, si confronti con il ciphertext intercettato `QFZWRWIVTYRESXBFOGKUHQBAISEZ` e si determini una possibile coppia (plaintext,ciphertext)**
+
+Una coppia possibile è la seguente:
+
+| | | | |1| 2| 3 |4 |5 |6 |7 |8 |9 |10| 11 |12 |13 |14 |15 |16 |17 |18 |19 |20 |21 |22 |23| |
+|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|
+| | | | |W |E |T |T |E |R |V |O |R |H |E |R |S |A |G |E |B |I |S |K |A |Y |A| |
+|Q|F|Z|W|R |W |I |V |T |Y |R |E |S |X |B |F |O |G |K |U |H |Q |B |A |I |S |E|Z|
+
+### Domanda D
+**Si disegni il menù relativo alla coppia CRIB-CIPHERTEXT per il CRIB dato precedentemente. Se be individuino tutti i cicli.**
+
+Il menù relativo è il seguente:
+```mermaid
+flowchart TD
+W<-->|1|R
+E<-->|2|W
+T<-->|3|I
+T<-->|4|V
+E<-->|5|T
+R<-->|6|Y
+V<-->|7|R
+O<-->|8|E
+R<-->|9|S
+H<-->|10|X
+E<-->|11|B
+R<-->|12|F
+S<-->|13|O
+A<-->|14|G
+G<-->|15|K
+E<-->|16|U
+B<-->|17|H
+I<-->|18|Q
+S<-->|19|B
+K<-->|20|A
+A<-->|21|I
+Y<-->|22|S
+A<-->|23|E
+```
+I cicli possibili sono 10 (senza tener conto dell'nodo di partenza):
+1. AKGA
+2. RSYR
+3. ETIAE
+4. ETIVRWE
+5. EBSRWE
+6. EBSRVITE
+7. EBSRVIAE
+8. EBSYRWE
+9. EBSYRVITE
+10. EBSYRVIAE
+
+## Domanda F
+**Si descriva un modo di connettere opportunamente tre macchine Enigma in cascata per
+controllare l’esistenza di un ciclo del tipo**
+```mermaid
+flowchart TD
+X1<-->|15|X2
+X2<-->|20|X3
+X3<-->|14|X1
+```
+**in un grafo di
+Turing relativo ad un qualsiasi stato iniziale.**
+
+Le macchine Enigma vanno inserite sugli archi e devono restiturie i nodi del grafo.
+
 # Esercizi di programmazione
 ## Analisi delle frequenze di un testo
 ## Cifrario di Hill
