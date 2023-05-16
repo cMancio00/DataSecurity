@@ -1,4 +1,4 @@
-# Relazione set 2
+# Esercizi di approfondimento
 ## Common modulus failure
 Un utente A possiede due coppie di chiavi pubbliche-private RSA, relative allo stesso modulo
 n dato da
@@ -49,3 +49,42 @@ $$
 & \mod 825500608838866132701444300844117841826444264266030066831623 \\
 &= 564140501104607297831987135512845214089854084977820388226740
 \end{align*}$$
+
+## Timing attack contro esponenziazione modulare (Kocher 1996)
+
+### Domanda a
+
+$Var(X) \stackrel{def}{=} E[(X-\mu)^2] = E[X^2] - \mu^2$
+
+Se $X$ e $Y$ sono variabili aleatorie indipendenti, allora $Var[X + Y] = Var[X] + Var[Y]$, infatti:
+$$\begin{align*}
+    Var[X + Y] &= E[(X-\mu_1)^2 + (Y-\mu_2)^2]\\
+     &= E[(X-\mu_1)^2] + E[(Y-\mu_2)^2]
+     \quad\text{(Per la linearità del valore atteso)}\\
+     &= Var[X] + Var[Y]
+\end{align*}$$
+
+### Domanda b
+$$T - T^{\prime} = \underbrace{(T_i - T^{\prime}_i)}_{
+                    \text{Tempo comune}} 
+
++ \underbrace{\sum_{j=i-1}^{0}{T_j}}_{
+                    \text{Tempo differente}} $$
+
+### Domanda c
+$$
+\begin{equation*}
+  \begin{cases} 
+   Var[T - T^{\prime}] = i\nu& \text{se } d_i = d^\prime \\
+   Var[T - T^{\prime}] = \underbrace{2^\nu}_{(T_i - T^{\prime}_i)} \quad \underbrace{i\nu}_{\sum_{j=i-1}^{0}{T_j}}& 
+   \text{se } d_i \not ={d^\prime}
+  \end{cases}
+  \end{equation*}
+$$
+### Domanda d
+Facendo riferimento all'equazione della domanda C, possiamo stabilire che abbiamo indovinato il bit giusto se ha associato una varianza minore, infatti se $d_i = d^\prime$ allora $Var[T - T^{\prime}] = i\nu$, contro $2^\nu i\nu$.
+
+### Domanda f
+L'attacco è left to right e si parte ponendo $d_{k-1} = 1$, si indovinano i vari bit scegliendo quello con varianza minore e ci si sposta verso destra fino a $d_0$.
+### Domanda g
+Non possiamo usare la media perchè non si somma coma la varianza.
