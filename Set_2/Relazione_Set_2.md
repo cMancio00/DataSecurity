@@ -88,3 +88,57 @@ Facendo riferimento all'equazione della domanda C, possiamo stabilire che abbiam
 L'attacco è left to right e si parte ponendo $d_{k-1} = 1$, si indovinano i vari bit scegliendo quello con varianza minore e ci si sposta verso destra fino a $d_0$.
 ### Domanda g
 Non possiamo usare la media perchè non si somma coma la varianza.
+
+# Esercizi di programmazione
+
+## Timing Attack
+Secondo la teoria possiamo effettuare un Timing attack e scoprire i bit dell' esponente in maniera iterativa nel seguente modo:
+1. Partendo dal bit a sinistra posto a 1, calcolare la varianza tra tante osservazioni aggiungendo prima uno 0 e poi un 1
+2. Selezionare il bit che porta alla varianza minima
+
+Avendo l'esponente di 64 bit procediamo per altre 63 volte come segue:
+
+```Python
+def main():
+    ta = TimingAttack()
+    exponent = [1]
+    for _ in range(1,64):
+        variance = generateObservations(exponent,ta)
+        if variance[0] < variance[1]:
+            exponent.append(0)
+        else:
+            exponent.append(1)
+```
+
+Le osservazioni vengono generate tramite la funzione `generateObservations(exponent,ta)` che prende in input la lista dell'esponente attualmente trovata e l'oggetto ta che simula ad esempio una smart card rubata. Come output restituisce una lista delle due varianze calcolate:
+- varianza con il bit 0 in posizione 0
+- varianza con il bit 1 in posizione 1
+
+```Python
+def generateObservations(exponent:list[int],ta:TimingAttack)->list[int]:
+    observations0 = []
+    observations1 = []
+    for _ in range(2000):
+        chipertext = np.random.randint(0,(2**62-1))
+        realTime = ta.victimdevice(chipertext)
+        observations0.append(trybit(0,ta,exponent,realTime,chipertext))
+        observations1.append(trybit(1,ta,exponent,realTime,chipertext))
+    var0 = np.array(observations0)
+    var1 = np.array(observations1)
+    return [np.var(var0),np.var(var1)]
+```
+
+Per 2000 osservazioni si genera un ciphertext casuale e si calcola il tempo che la smart cart impiega a decifrare con `ta.victimdevice(chipertext)`. Adesso dobbiamo calcolarci i tempi della decifratura per le prime k iterazioni, con k la dimensione attuale dell'esponente che abbiamo trovato. Effettuando la differenza tra il ciphertext e il tempo appena calcolato (prima con 0 e poi con 1) tramite la funzione `trybit(0,ta,exponent,realTime,chipertext)`, abbiamo generato un'osservazione (una con il bit 0 e una con il bit 1).
+
+A fine ciclo possiamo calcolare la varianza di questi due array e restituire il valore al main.
+
+```Python
+def trybit(bit:int,ta:TimingAttack,exponent:int,realTime:int,chipertext:int)->int:
+    exponent.append(bit)
+    observation = realTime - ta.attackerdevice(chipertext,exponent)
+    del exponent[-1]
+    return observation
+```
+La funzione `trybit` calcola semplicemente la differenza di tempo impiegata nella decifratura tra la vera smart cart e il ciclo troncato per l'attacco.
+
+
