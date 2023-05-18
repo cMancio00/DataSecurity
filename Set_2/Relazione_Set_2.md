@@ -25,30 +25,30 @@ $$c_1^x * c_2^y = (m^{e_1})^x*(m^{e_2})^y = m^{xe_1 + ye_2} = m^1 = m \mod{n}$$
 
 Effettivamente $3$ e $5$ sono coprimi e posso trovare $x$ e $y$ tramite l'algoritmo di Euclide esteso:
 $$
-\begin{align*}
+\begin{aligned}
     11 &= 3*3 +2\\
     3 &= 1+2 + 1
-\end{align*}
+\end{aligned}
 $$
 $$1=3-1+2=3-1*(11-3)=-1*11+4+3$$
 La $x$ è negativa, ma sapendo che $-1 \equiv 11^{-1} \mod 3$, posso scrivere $-1 + 3 = 2$, quindi ho:
 $$
-\begin{align*}
+\begin{aligned}
     x &= 2\\
     y &= 4
-\end{align*}
+\end{aligned}
 $$
 
 Sostituendo i valori si ottiene: $c_1^4 * c_2^2$ (sono stati invertiti i valori per rispettare i relativi inversi).
 
 Effettuando i calcoli otteniamo:
 $$
-\begin{align*}
+\begin{aligned}
 &41545998005971238876458051627852835754086854813200489396433^4 \\ 
 &* 88414116534670744329474491095339301121066308755769402836577^2 \\ 
 & \mod 825500608838866132701444300844117841826444264266030066831623 \\
 &= 564140501104607297831987135512845214089854084977820388226740
-\end{align*}$$
+\end{aligned}$$
 
 ## Timing attack contro esponenziazione modulare (Kocher 1996)
 
@@ -57,32 +57,34 @@ $$
 $Var(X) \stackrel{def}{=} E[(X-\mu)^2] = E[X^2] - \mu^2$
 
 Se $X$ e $Y$ sono variabili aleatorie indipendenti, allora $Var[X + Y] = Var[X] + Var[Y]$, infatti:
-$$\begin{align*}
+$$\begin{aligned}
     Var[X + Y] &= E[(X-\mu_1)^2 + (Y-\mu_2)^2]\\
      &= E[(X-\mu_1)^2] + E[(Y-\mu_2)^2]
      \quad\text{(Per la linearità del valore atteso)}\\
      &= Var[X] + Var[Y]
-\end{align*}$$
+\end{aligned}$$
 
 ### Domanda b
-$$T - T^{\prime} = \underbrace{(T_i - T^{\prime}_i)}_{
-                    \text{Tempo comune}} 
 
-+ \underbrace{\sum_{j=i-1}^{0}{T_j}}_{
-                    \text{Tempo differente}} $$
+$$
+\begin{aligned}
+    T - T^{\prime} &= \underbrace{(T_i - T^{\prime}_i)}_{\text{Tempo comune}}\\
+    &+\underbrace{\sum_{j=i-1}^{0}{T_j}}_{\text{Tempo differente}}
+\end{aligned}
+$$
 
 ### Domanda c
+
 $$
-\begin{equation*}
   \begin{cases} 
-   Var[T - T^{\prime}] = i\nu& \text{se } d_i = d^\prime \\
-   Var[T - T^{\prime}] = \underbrace{2^\nu}_{(T_i - T^{\prime}_i)} \quad \underbrace{i\nu}_{\sum_{j=i-1}^{0}{T_j}}& 
+   Var\left[T - T^{\prime}\right] = i\nu& \text{se } d_i = d^\prime \\
+   Var\left[T - T^{\prime}\right] = \underbrace{2^\nu}_{(T_i - T^{\prime}_i)} \quad \underbrace{i\nu}_{\sum_{j=i-1}^{0}{T_j}}& 
    \text{se } d_i \not ={d^\prime}
   \end{cases}
-  \end{equation*}
 $$
+
 ### Domanda d
-Facendo riferimento all'equazione della domanda C, possiamo stabilire che abbiamo indovinato il bit giusto se ha associato una varianza minore, infatti se $d_i = d^\prime$ allora $Var[T - T^{\prime}] = i\nu$, contro $2^\nu i\nu$.
+Facendo riferimento all'equazione della domanda C, possiamo stabilire che abbiamo indovinato il bit giusto se ha associato una varianza minore, infatti se $d_i = d^\prime$ allora $Var\left[T - T^{\prime}\right] = i\nu$, contro $2^\nu i\nu$.
 
 ### Domanda f
 L'attacco è left to right e si parte ponendo $d_{k-1} = 1$, si indovinano i vari bit scegliendo quello con varianza minore e ci si sposta verso destra fino a $d_0$.
