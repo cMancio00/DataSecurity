@@ -42,13 +42,14 @@ $$
 Sostituendo i valori si ottiene: $c_1^4 * c_2^2$ (sono stati invertiti i valori per rispettare i relativi inversi).
 
 Effettuando i calcoli otteniamo:
-$$
+```math
 \begin{aligned}
 &41545998005971238876458051627852835754086854813200489396433^4 \\ 
 &* 88414116534670744329474491095339301121066308755769402836577^2 \\ 
 & \mod 825500608838866132701444300844117841826444264266030066831623 \\
 &= 564140501104607297831987135512845214089854084977820388226740
-\end{aligned}$$
+\end{aligned}
+```
 
 ## Timing attack contro esponenziazione modulare (Kocher 1996)
 
