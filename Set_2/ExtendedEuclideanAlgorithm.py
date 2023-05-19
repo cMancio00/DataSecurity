@@ -1,5 +1,3 @@
-import random
-
 def ExtendedEuclideanAlgorithm(a:int, b:int) -> tuple[int, int, int]:
     x,y, u,v = 0,1, 1,0
     while a != 0:

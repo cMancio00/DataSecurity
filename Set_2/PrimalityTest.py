@@ -1,5 +1,4 @@
 from FastExponential import fast_modular_exponentiation
-
 def rabin_test(n:int)->bool:
     if n == 2:
         return True
@@ -14,7 +13,7 @@ def rabin_test(n:int)->bool:
     b = fast_modular_exponentiation(a, m, n)
     if b == 1 or b == n-1:
         return True
-    for i in range(k-1):
+    for _ in range(k-1):
         b = fast_modular_exponentiation(b, 2, n)
         if b == n-1:
             return True

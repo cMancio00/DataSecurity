@@ -12,18 +12,23 @@ def rsa_keygen(bit_lenght: int = 1024) -> tuple:
     return (e, n), (d, n),(p,q)
 
 def crypt(m: int, e: int, n: int) -> int:
-    start = time.time()
-    return pow(m, e, n),time.time()-start
-
-def crypt_crt(m: int, p: int, q: int,e:int) -> int:
-    Sp = pow(m, e, p)
-    Sq = pow(m, e, q)
-    n = p * q
-    start = time.time()
-    return (q* pow(q,-1,p) *Sp+ p*pow(p,-1,q)*Sq) % (n),time.time()-start
+    return pow(m, e, n)
 
 def decrypt(c: int, d: int, n: int) -> int:
-    return pow(c, d, n)
+    start = time.time()
+    return pow(c, d, n),time.time()-start
+
+def decrypt_crt(c:int,d:int,p:int,q:int) -> int:
+    Sp = d % (p - 1)
+    Sq = d % (q - 1)
+    start = time.time()
+    q_inv = pow(q, -1, p)
+    #p_inv = pow(p, -1, q)
+    m1 = pow(c, Sp, p)
+    m2 = pow(c, Sq, q)
+    h = (q_inv * (m1 - m2)) % p
+    return m2 + h * q,time.time()-start
+
 
 def main():
     base = []
@@ -31,19 +36,19 @@ def main():
     public, private,primes = rsa_keygen()
     for _ in range(100):
         m = np.random.randint(2**61, 2**62)
-        c,time_base = crypt(m, public[0], public[1])
-        d,time_crt = crypt_crt(m, primes[0], primes[1],public[0])
+        c = crypt(m, public[0], public[1])
+        m,time_base = decrypt(c, private[0], private[1])
+        m,time_crt = decrypt_crt(c, private[0], primes[0],primes[1])
         base.append(time_base)
         crt.append(time_crt)
 
     print("Base: ",np.mean(base))
     print("CRT:  ",np.mean(crt))
-    # print('Encrypted message: ', c)
-    # print('Encrypted message: ', d)
-    # m = decrypt(c, private[0], private[1])
-    # print('Decrypted message: ', m)
-    # m = decrypt(d, private[0], private[1])
-    # print('Decrypted message: ', m)
+    print("Percentuale di miglioramento: ",\
+          ((np.mean(base)-np.mean(crt))/np.mean(base))*100,"%")
+
+
+
 
 if __name__ == '__main__':
     main()
