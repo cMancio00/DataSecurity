@@ -87,3 +87,38 @@ Eseguendo:
     assert decoded == 'cdbbaaad'
 ```
 Non otteniamo nessun `AssertionError`.
+
+# Esercizi di approfondimento
+## Strategie e codici
+In un gioco sono date n monete, etichettate con numeri da 1 a n. Il giocatore A, non visto dal
+giocatore B, può:
+- sostituire una moneta i scelta a caso con una moneta falsa, identica all’aspetto ma più leggera;
+- sostituire una moneta i scelta a caso con una moneta falsa, identica all’aspetto ma più pesante;
+- non effettuare alcuna sostituzione.
+  
+Il giocatore B deve individuare l’azione compiuta da A. Allo scopo, B ha a sua disposizione una
+bilancia con cui confrontare il peso di gruppi di monete: ad ogni pesata, la bilancia può dire che è
+più pesante il piatto di destra, oppure quello di sinistra, oppure che i due piatti hanno ugual peso.
+### Soluzione
+
+1. Una strategia con $n=5$ è definita nel seguente albero.
+
+![Strategy](Pictures/Strategy.jpg)
+
+1. La lunghezza massima di pesate (altezza dell'albero) è 3. Il numero medio di pesate è $\frac{7*2+4*3}{11}\approx 2.36$.
+
+## La capacità del piccione viaggiatore
+Un comandante che assedia un forte usa dei piccioni viaggiatori per comunicare con gli alleati.
+Ogni piccione porta una lettera (8 bit). Viene liberato un piccione ogni 5 minuti. Ogni piccione
+impiega tre minuti per raggiungere la destinazione. Si calcoli la capacità in bit/ora di questo
+collegamento, nei seguenti due casi.
+
+1. I piccioni raggiungono tutti la destinazione.
+2. I nemici abbattono una frazione $\alpha$ dei piccioni, e sostituiscono ogni piccione abbattuto con uno che porta una lettera scelta a caso.
+
+### Soluzione
+
+1. Vengono inviati $\frac{60}{5} = 12 \frac{piccioni}{ora}$, quindi vengono inviati $8*12 = 96 \frac{bit}{ora}$.
+2. La probabilità di scegliere un piccione è $(1-\alpha)$, di abbatterlo è $\alpha$ e di scegliere un rimpiazzo è $\frac{1}{256}$. Ogni riga della matrice di probabilità avrà nell'elemento diagonale $(1-\alpha)+\frac{\alpha}{256}$ e tutte le altre entrate a $\frac{\alpha}{256}$. La capicità del canale è dunque data da
+
+$$\log(2^8) - H(((1-\alpha)+\frac{\alpha}{256},\frac{\alpha}{256},...,\frac{\alpha}{256}))$$
